@@ -24,33 +24,35 @@ const cartes = [
 ];
 
 export default function App() {
-  const [selectedImg, setSelectedImg] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
+  const [showTitleImage, setShowTitleImage] = useState(false);
 
   return (
     <View style={styles.container}>
-      {selectedImg ? (
-        <Pressable onPress={() => setSelectedImg(null)}>
-          <Image source={{ uri: selectedImg }} style={styles.cardImage} />
+      <View style={styles.titleContainer}>
+        <Pressable onPress={() => setShowTitleImage(!showTitleImage)}>
+          <Text style={styles.text}>All Scan</Text>
         </Pressable>
-      ) : (
-        <>
-          <View style={styles.titleContainer}>
-            <Text style={styles.text}>All Scan</Text>
-          </View>
-          <FlatList
-            data={cartes}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <Pressable onPress={() => setSelectedImg(item.img)}>
-                <View style={styles.card}>
-                  <Text style={styles.text}>{item.nom}</Text>
-                  <Text style={styles.text}>CMC: {item.cmc}</Text>
-                </View>
-              </Pressable>
-            )}
-          />
-        </>
+        
+      </View>
+      {showTitleImage && (
+        <Pressable onPress={() => setShowTitleImage(false)}>
+          <Image source={require('./assets/coucou.jpg')} style={styles.titleImage} />
+        </Pressable>
       )}
+      <FlatList
+        data={cartes}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <Pressable onPress={() => setExpandedId(expandedId === item.id ? null : item.id)}>
+            <View style={styles.card}>
+              <Text style={styles.text}>{item.nom}</Text>
+              <Text style={styles.text}>CMC: {item.cmc}</Text>
+              {expandedId === item.id && <Image source={{ uri: item.img }} style={styles.cardImage} />}
+            </View>
+          </Pressable>
+        )}
+      />
     </View>
   );
 }
@@ -82,5 +84,10 @@ const styles = StyleSheet.create({
   cardImage: {
     width: 300,
     height: 400,
+  },
+  titleImage: {
+    width: 300,
+    height: 400,
+    marginVertical: 10,
   },
 });
