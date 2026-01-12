@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Image, FlatList, Pressable } from 'react-native';
 import { useState } from 'react';
+import * as Haptics from 'expo-haptics';
 
 const cartes = [
   {
@@ -27,16 +28,24 @@ export default function App() {
   const [expandedId, setExpandedId] = useState(null);
   const [showTitleImage, setShowTitleImage] = useState(false);
 
+  console.log('App component rendered');
+
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <Pressable onPress={() => setShowTitleImage(!showTitleImage)}>
+        <Pressable onPress={() => {
+          console.log('Title pressed');
+          setShowTitleImage(!showTitleImage);
+        }}>
           <Text style={styles.text}>All Scan</Text>
         </Pressable>
         
       </View>
       {showTitleImage && (
-        <Pressable onPress={() => setShowTitleImage(false)}>
+        <Pressable onPress={() => {
+          console.log('Title image pressed');
+          setShowTitleImage(false);
+        }}>
           <Image source={require('./assets/coucou.jpg')} style={styles.titleImage} />
         </Pressable>
       )}
@@ -44,7 +53,11 @@ export default function App() {
         data={cartes}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <Pressable onPress={() => setExpandedId(expandedId === item.id ? null : item.id)}>
+          <Pressable onPress={() => {
+            console.log('Card pressed:', item.nom);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            setExpandedId(expandedId === item.id ? null : item.id);
+          }}>
             <View style={styles.card}>
               <Text style={styles.text}>{item.nom}</Text>
               <Text style={styles.text}>CMC: {item.cmc}</Text>
