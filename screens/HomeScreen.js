@@ -4,140 +4,255 @@ import {
   View,
   Image,
   FlatList,
-  Animated,
   TouchableOpacity,
   Pressable,
-  ScrollView
+  ActivityIndicator,
+  Alert,
+  Vibration
 } from 'react-native'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import * as fire from '../fire'
 import { useNavigation } from '@react-navigation/native'
-import { StatusBar } from 'expo-status-bar'
-
-const cartes = [
-  {
-    id: 1,
-    nom: "Alchemist's Greeting",
-    cmc: 5,
-    img : "https://cards.scryfall.io/normal/front/f/3/f36e2146-b6a9-4b61-9ccf-969a2c79b747.jpg?1736468080"
-  },
-  {
-    id: 2,
-    nom: "Ajani, the Greathearted",
-    cmc: 4,
-    img : "https://cards.scryfall.io/normal/front/6/c/6cc78151-8cb0-4521-9674-fb0c67e24a17.jpg?1582053217"
-  },
-  {
-    id: 3,
-    nom: "Abzan Devotee",
-    cmc: 2,
-    img : "https://cards.scryfall.io/normal/front/6/6/66555946-e747-46fa-b1ac-b103a8edcd93.jpg?1743204231"
-  },
-  {
-    id: 4,
-    nom: "Annie Joins Up",
-    cmc: 4,
-    img : "https://cards.scryfall.io/normal/front/1/6/1624a5f4-f5bc-47c9-85de-c5520ee234ce.jpg?1712356038"
-  },
-];
 
 export default function HomeScreen() {
   const navigation = useNavigation();
-  const [expandedId, setExpandedId] = useState(null);
   const [showTitleImage, setShowTitleImage] = useState(false);
+  const [cards, setCards] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    console.log('App opened');
-  }, []);
+    const userId = fire.getCurrentUserUid()
+    if (!userId) {
+      setLoading(false)
+      return
+    }
 
-  console.log('App component rendered');
+    const unsubscribe = fire.getUserCards(userId, posts => {
+      setCards(posts)
+      setLoading(false)
+    })
 
-  return (
-    <ScrollView style={styles.container}>
-      <Pressable onPress={() => {
-        setShowTitleImage(!showTitleImage);
-      }}>
+    return () => {
+      if (typeof unsubscribe === 'function') unsubscribe();
+    }
+  }, [])
+
+  // Fonction de suppression avec vibration et alerte
+  const handleDeleteCard = (item) => {
+    // Vibration courte pour signaler l'action (400ms)
+    Vibration.vibrate(100);
+
+    Alert.alert(
+      "Supprimer la carte",
+      `Voulez-vous vraiment retirer "${item.nom}" de votre collection ?`,
+      [
+        { text: "Annuler", style: "cancel" },
+        { 
+          text: "Supprimer", 
+          style: "destructive", 
+          onPress: async () => {
+            try {
+              await fire.removeFromCollection(item.id);
+              // Optionnel : petite vibration de succès
+              Vibration.vibrate(50);
+            } catch (err) {
+              Alert.alert("Erreur", "Impossible de supprimer la carte.");
+            }
+          } 
+        }
+      ]
+    );
+  };
+
+  const renderHeader = () => (
+    <View style={styles.headerContainer}>
+      <Pressable onPress={() => setShowTitleImage(!showTitleImage)}>
         <Text style={styles.title1}>All Scan</Text>
       </Pressable>
+      
       {showTitleImage && (
         <Image source={require('../assets/coucou.jpg')} style={styles.titleImage} />
       )}
-      <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate("Liste")}>
+      
+      <TouchableOpacity 
+        activeOpacity={0.7} 
+        style={styles.btn} 
+        onPress={() => navigation.navigate("Liste")}
+      >
         <Text style={styles.btnText}>Random Card</Text>
       </TouchableOpacity>
-      <FlatList
-        data={cartes}
-        keyExtractor={(item) => item.id.toString()}
-        scrollEnabled={false}
-        renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Image source={{ uri: item.img }} style={styles.cardImage}/>
-              <View style={{ flex: 1, padding: 12, justifyContent: 'space-between' }}>
-                <Text style={styles.text}>{item.nom}</Text>
-                <Text style={styles.text}>CMC: {item.cmc}</Text>
-              </View>
+      
+      <TouchableOpacity 
+        activeOpacity={0.7}
+        style={[styles.btn, { backgroundColor: '#444', marginBottom: 25 }]} 
+        onPress={() => navigation.navigate('Profile')}
+      >
+        <Text style={styles.btnText}>Mon profil</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.sectionTitle}>Ma Collection ({cards.length})</Text>
+    </View>
+  )
+
+  return (
+    <View style={styles.container}>
+      {loading ? (
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#6200ee" />
+        </View>
+      ) : (
+        <FlatList
+          data={cards}
+          keyExtractor={(item) => item.id.toString()}
+          ListHeaderComponent={renderHeader}
+          contentContainerStyle={{ paddingBottom: 40 }}
+          showsVerticalScrollIndicator={true} // Affiche la barre de défilement
+          renderItem={({ item }) => (
+            <View style={styles.cardContainer}>
+              <TouchableOpacity 
+                activeOpacity={0.8}
+                style={styles.card}
+                onPress={() => {
+                  const cardData = {
+                    ...item,
+                    name: item.nom,
+                    image_uris: { normal: item.img }
+                  }
+                  navigation.navigate('Detail', { card: cardData })
+                }}
+              >
+                <Image source={{ uri: item.img }} style={styles.cardImage}/>
+                <View style={styles.cardContent}>
+                  <View>
+                    <Text style={styles.textNom} numberOfLines={1}>{item.nom}</Text>
+                    <Text style={styles.textCmc}>CMC: {item.cmc}</Text>
+                    <Text style={styles.textType} numberOfLines={1}>{item.type_line}</Text>
+                  </View>
+
+                  {/* Bouton de suppression stylisé */}
+                  <TouchableOpacity 
+                    style={styles.deleteBtn}
+                    onPress={() => handleDeleteCard(item)}
+                  >
+                    <Text style={styles.deleteBtnText}>Supprimer</Text>
+                  </TouchableOpacity>
+                </View>
+              </TouchableOpacity>
             </View>
-        )}
-      />
-    </ScrollView>
+          )}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>Aucune carte dans votre collection.</Text>
+          }
+        />
+      )}
+    </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#191f2c',
-    padding: 15,
+    paddingHorizontal: 15,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  headerContainer: {
+    paddingTop: 20,
   },
   title1: {
-    fontStyle: 'normal',
     fontWeight: 'bold',
     fontSize: 28,
     color: 'white',
     marginBottom: 20,
     textAlign: 'center',
   },
+  sectionTitle: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
   btn: {
     backgroundColor: '#6200ee',
-    padding: 12,
-    borderRadius: 8,
+    padding: 15,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 15,
+    elevation: 3, // Ombre sur Android
   },
   btnText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },
+  cardContainer: {
+    marginBottom: 12,
+  },
   card: {
     flexDirection: 'row',
     backgroundColor: '#2a3545',
-    borderRadius: 8,
-    marginBottom: 10,
+    borderRadius: 12,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#444',
+    borderColor: '#3d4b5f',
+    elevation: 2,
   },
   cardImage: {
-    width: 80,
-    height: 110,
+    width: 90,
+    height: 125,
     backgroundColor: '#1a1a1a',
   },
-  text: {
+  cardContent: {
+    flex: 1,
+    padding: 12,
+    justifyContent: 'space-between',
+  },
+  textNom: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 2,
+  },
+  textCmc: {
+    color: '#ffeb3b',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  textType: {
+    color: '#b0bec5',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  deleteBtn: {
+    alignSelf: 'flex-end',
+    backgroundColor: 'rgba(255, 82, 82, 0.1)',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#ff5252',
+  },
+  deleteBtnText: {
+    color: '#ff5252',
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
   },
   titleImage: {
     width: '100%',
-    height: 300,
-    marginVertical: 15,
-    borderRadius: 8,
-  },
-  titleContainer: {
-    marginTop: 50,
+    height: 200,
     marginBottom: 20,
+    borderRadius: 10,
   },
+  emptyText: {
+    color: '#b0bec5',
+    textAlign: 'center',
+    marginTop: 50,
+    fontStyle: 'italic',
+  }
 });

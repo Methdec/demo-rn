@@ -11,6 +11,8 @@ import {
 import { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { getRandomCard } from '../services/api'
+import * as fire from '../fire'
+import { Alert, Button } from 'react-native'
 
 export default function ListScreen() {
   const navigation = useNavigation()
@@ -38,6 +40,31 @@ export default function ListScreen() {
       console.error('Erreur:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleAddToCollection = async (card) => {
+    try {
+      const userId = fire.getCurrentUserUid()
+      if (!userId) {
+        Alert.alert('Erreur', 'Vous devez être connecté')
+        return
+      }
+      // Store complete card data directly in collection
+      await fire.addCollection({ 
+        card_id: card.id, 
+        user_id: userId, 
+        date: new Date(),
+        nom: card.name,
+        img: card.image_uris?.normal || card.image_uris?.small,
+        cmc: card.cmc || 0,
+        type_line: card.type_line,
+        mana_cost: card.mana_cost
+      })
+      Alert.alert('Succès', 'Carte ajoutée à votre collection')
+    } catch (err) {
+      console.error('Erreur ajout collection', err)
+      Alert.alert('Erreur', 'Impossible d\'ajouter la carte')
     }
   }
 
@@ -78,6 +105,9 @@ export default function ListScreen() {
                 {item.type_line && (
                   <Text style={styles.type} numberOfLines={2}>{item.type_line}</Text>
                 )}
+                <View style={{ marginTop: 8 }}>
+                  <Button title="Ajouter" onPress={() => handleAddToCollection(item)} />
+                </View>
               </View>
             </View>
           </Pressable>
