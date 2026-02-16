@@ -80,6 +80,13 @@ export default function HomeScreen() {
       </TouchableOpacity>
       
       <TouchableOpacity 
+        style={[styles.btn, { backgroundColor: '#009688' }]} 
+        onPress={() => navigation.navigate("Search")}
+      >
+        <Text style={styles.btnText}>Rechercher une carte</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity 
         activeOpacity={0.7}
         style={[styles.btn, { backgroundColor: '#444', marginBottom: 25 }]} 
         onPress={() => navigation.navigate('Profile')}
@@ -87,12 +94,6 @@ export default function HomeScreen() {
         <Text style={styles.btnText}>Mon profil</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity 
-        style={[styles.btn, { backgroundColor: '#009688' }]} 
-        onPress={() => navigation.navigate("Search")}
-      >
-        <Text style={styles.btnText}>Rechercher une carte</Text>
-      </TouchableOpacity>
 
       <Text style={styles.sectionTitle}>Ma Collection ({cards.length})</Text>
     </View>
