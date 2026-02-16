@@ -5,14 +5,12 @@ import * as fire from '../fire'
 export default function ProfileScreen() {
   const user = fire.auth.currentUser
 
-  // URL d'une image de profil par défaut (Avatar neutre)
   const defaultAvatar = 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Profil</Text>
 
-      {/* Affichage simple de l'image par défaut */}
       <View style={styles.avatarContainer}>
         <Image 
           source={{ uri: defaultAvatar }} 
@@ -34,7 +32,7 @@ export default function ProfileScreen() {
       <View style={{ marginTop: 10, width: '100%' }}>
         <Button 
           title="Supprimer le compte" 
-          onPress={() => {/* Ta fonction deleteUserProfile */}} 
+          onPress={() => fire.deleteUserProfile()} 
           color="#b71c1c" 
         />
       </View>

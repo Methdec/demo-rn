@@ -50,7 +50,6 @@ export default function ListScreen() {
         Alert.alert('Erreur', 'Vous devez être connecté')
         return
       }
-      // Store complete card data directly in collection
       await fire.addCollection({ 
         card_id: card.id, 
         user_id: userId, 

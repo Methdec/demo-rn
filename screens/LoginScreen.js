@@ -96,7 +96,6 @@ export default function LoginScreen() {
               </View>
             )}
           </View>
-          {/* View vide pour pousser le contenu vers le haut */}
           <View style={{ flex: 1 }} />
         </View>
       </TouchableWithoutFeedback>
@@ -112,7 +111,7 @@ const styles = StyleSheet.create({
   inner: {
     flex: 1,
     padding: 24,
-    justifyContent: 'flex-end', // Pousse le contenu vers le haut quand le clavier arrive
+    justifyContent: 'flex-end', 
   },
   title: {
     fontSize: 32,

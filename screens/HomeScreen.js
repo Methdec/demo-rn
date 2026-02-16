@@ -37,9 +37,7 @@ export default function HomeScreen() {
     }
   }, [])
 
-  // Fonction de suppression avec vibration et alerte
   const handleDeleteCard = (item) => {
-    // Vibration courte pour signaler l'action (400ms)
     Vibration.vibrate(100);
 
     Alert.alert(
@@ -53,7 +51,6 @@ export default function HomeScreen() {
           onPress: async () => {
             try {
               await fire.removeFromCollection(item.id);
-              // Optionnel : petite vibration de succès
               Vibration.vibrate(50);
             } catch (err) {
               Alert.alert("Erreur", "Impossible de supprimer la carte.");
@@ -106,7 +103,7 @@ export default function HomeScreen() {
           keyExtractor={(item) => item.id.toString()}
           ListHeaderComponent={renderHeader}
           contentContainerStyle={{ paddingBottom: 40 }}
-          showsVerticalScrollIndicator={true} // Affiche la barre de défilement
+          showsVerticalScrollIndicator={true}
           renderItem={({ item }) => (
             <View style={styles.cardContainer}>
               <TouchableOpacity 
@@ -183,7 +180,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 15,
-    elevation: 3, // Ombre sur Android
+    elevation: 3,
   },
   btnText: {
     color: 'white',
