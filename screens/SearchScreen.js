@@ -62,7 +62,6 @@ export default function SearchScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Barre de recherche */}
       <View style={styles.searchSection}>
         <TextInput
           style={styles.input}

@@ -20,7 +20,6 @@ export default function ProfileScreen() {
   }
 
   const handleDeleteAccount = () => {
-    // Vibration d'alerte (plus longue pour marquer la gravité)
     Vibration.vibrate(150);
 
     Alert.alert(
@@ -34,7 +33,7 @@ export default function ProfileScreen() {
           onPress: async () => {
             try {
               await fire.deleteUserProfile()
-              Vibration.vibrate([0, 100, 50, 100]); // Pattern de succès/fin
+              Vibration.vibrate([0, 100, 50, 100]); 
             } catch (err) {
               Alert.alert("Erreur", "Impossible de supprimer le compte.")
             }
