@@ -18,6 +18,7 @@ import {
   signInWithEmailAndPassword, 
   signOut, 
   onAuthStateChanged, 
+  updateProfile,
   deleteUser 
 } from 'firebase/auth'
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage'
@@ -72,6 +73,18 @@ export const deleteUserProfile = async () => {
     await deleteDoc(docSnap.ref)
   }
   await deleteUser(auth.currentUser)
+}
+
+export const updateUserProfile = async (displayName) => {
+  if (auth.currentUser) {
+    try {
+      await updateProfile(auth.currentUser, { displayName: displayName })
+      console.log('Profil mis à jour !')
+    } catch (error) {
+      console.error('Erreur mise à jour profil:', error)
+      throw error
+    }
+  }
 }
 
 // --- TRADUCTION ERREURS ---

@@ -5,6 +5,7 @@ import ListScreen from './screens/ListScreen'
 import DetailScreen from './screens/DetailScreen'
 import ProfileScreen from './screens/ProfileScreen'
 import LoginScreen from './screens/LoginScreen'
+import SearchScreen from './screens/SearchScreen';
 import { useEffect, useState } from 'react'
 import { onAuthStateChangedListener } from './fire'
 
@@ -27,6 +28,7 @@ export default function App () {
             <Stack.Screen name='Liste' component={ListScreen} />
             <Stack.Screen name='Detail' component={DetailScreen} />
             <Stack.Screen name='Profile' component={ProfileScreen} />
+            <Stack.Screen name='Search' component={SearchScreen} />
           </>
         ) : (
           <Stack.Screen name='Login' component={LoginScreen} />

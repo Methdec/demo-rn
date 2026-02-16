@@ -1,29 +1,40 @@
 # Random Magic App
 
-Une application mobile développée avec React Native pour s'exercer à la création d'interfaces fluides et à la gestion de données en temps réel.
+Une application mobile performante développée avec React Native et Expo. Ce projet permet de gérer une collection de cartes Magic: The Gathering en communiquant avec l'API Scryfall et un backend Firebase.
 
 ## Fonctionnalités
 
-* **Authentification** : Système de connexion et d'inscription sécurisé via Firebase.
-* **Accueil (Home)** : Visualisation de ta collection personnelle de cartes stockées sur Firestore.
-* **Pioche (Liste)** : Récupération de 10 cartes aléatoires via l'API Scryfall avec possibilité de les ajouter à ta collection.
-* **Détails** : Page dédiée affichant toutes les informations techniques d'une carte (Mana, Type, Texte, Force/Endurance).
-* **Profil** : Gestion de ton compte, déconnexion et suppression des données.
+* **Authentification sécurisée** : Connexion et inscription avec gestion d'erreurs traduite via Firebase Auth.
+* **Accueil (Home)** : Liste synchronisée en temps réel de ta collection personnelle (Firestore).
+* **Recherche ciblée** : Nouvel écran de recherche pour trouver n'importe quelle carte par son nom.
+* **Pioche Aléatoire (Liste)** : Système de découverte avec historique des 10 dernières cartes générées.
+* **Détails avancés** : Fiche technique complète (Coût, Type, Oracle Text, Force/Endurance, Artiste).
+* **Expérience Utilisateur (UX)** : 
+    * Intégration de vibrations (Haptic Feedback) lors des suppressions ou actions critiques.
+    * Gestion intelligente du clavier sur les formulaires (KeyboardAvoidingView).
+* **Profil personnalisable** : Modification du pseudo et suppression définitive du compte.
 
 
 
 ## Stack Technique
 
-* **Frontend** : React Native (Expo)
-* **Backend** : Firebase (Auth & Firestore)
-* **Navigation** : React Navigation
-* **API** : Scryfall API
+* **Frontend** : React Native (Expo SDK)
+* **Backend** : Firebase (Auth & Firestore NoSQL)
+* **Navigation** : React Navigation (Stack)
+* **Données** : Scryfall API (via Fetch)
+* **Persistance** : AsyncStorage (Sessions)
 
 ## Structure du projet
 
-* `screens/` : Contient les 5 écrans principaux (Login, Home, Liste, Detail, Profil).
-* `fire.js` : Configuration Firebase et fonctions de communication avec la base de données.
-* `App.js` : Gestion de la navigation et de l'état de connexion.
+* `screens/` : Contient les écrans (Login, Home, Liste, Search, Detail, Profil).
+* `services/api.js` : Centralisation des appels vers l'API Scryfall.
+* `fire.js` : Cœur de la logique Firebase (Auth, Firestore, Traduction d'erreurs).
+* `App.js` : Gestion de la navigation et flux d'authentification.
+
+
+
+[Image of Firebase architecture diagram]
+
 
 ## Installation
 

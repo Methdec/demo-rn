@@ -3,14 +3,12 @@ import {
   Text,
   StyleSheet,
   Image,
-  ScrollView,
-  TouchableOpacity
+  ScrollView
 } from 'react-native'
-import { useRoute, useNavigation } from '@react-navigation/native'
+import { useRoute } from '@react-navigation/native'
 
 export default function DetailScreen() {
   const route = useRoute()
-  const navigation = useNavigation()
   const card = route.params?.card
 
   if (!card) {
@@ -21,71 +19,78 @@ export default function DetailScreen() {
     )
   }
 
+  // Cette petite fonction sécurise l'affichage pour éviter l'erreur "Text strings..."
+  const renderText = (value) => {
+    return value ? String(value) : null
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: card.image_uris?.normal || card.image_uris?.small }}
+          // Ajout de card.img pour la compatibilité avec Firestore
+          source={{ uri: card.image_uris?.normal || card.image_uris?.small || card.img }}
           style={styles.cardImage}
         />
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>{card.name}</Text>
+        {/* On s'assure que le nom existe, sinon on prend card.nom (Firestore) */}
+        <Text style={styles.title}>{renderText(card.name || card.nom)}</Text>
 
-        {card.mana_cost && (
+        {!!card.mana_cost && (
           <View style={styles.section}>
             <Text style={styles.label}>Coût de mana:</Text>
-            <Text style={styles.value}>{card.mana_cost}</Text>
+            <Text style={styles.value}>{renderText(card.mana_cost)}</Text>
           </View>
         )}
 
-        {card.type_line && (
+        {!!card.type_line && (
           <View style={styles.section}>
             <Text style={styles.label}>Type:</Text>
-            <Text style={styles.value}>{card.type_line}</Text>
+            <Text style={styles.value}>{renderText(card.type_line)}</Text>
           </View>
         )}
 
-        {card.oracle_text && (
+        {!!card.oracle_text && (
           <View style={styles.section}>
             <Text style={styles.label}>Texte:</Text>
-            <Text style={styles.description}>{card.oracle_text}</Text>
+            <Text style={styles.description}>{renderText(card.oracle_text)}</Text>
           </View>
         )}
 
-        {card.power && card.toughness && (
+        {!!(card.power && card.toughness) && (
           <View style={styles.section}>
             <Text style={styles.label}>Force/Endurance:</Text>
-            <Text style={styles.value}>{card.power}/{card.toughness}</Text>
+            <Text style={styles.value}>{renderText(card.power)}/{renderText(card.toughness)}</Text>
           </View>
         )}
 
-        {card.cmc && (
+        {!!card.cmc && (
           <View style={styles.section}>
             <Text style={styles.label}>CMC:</Text>
-            <Text style={styles.value}>{card.cmc}</Text>
+            <Text style={styles.value}>{renderText(card.cmc)}</Text>
           </View>
         )}
 
-        {card.set_name && (
+        {!!card.set_name && (
           <View style={styles.section}>
             <Text style={styles.label}>Set:</Text>
-            <Text style={styles.value}>{card.set_name}</Text>
+            <Text style={styles.value}>{renderText(card.set_name)}</Text>
           </View>
         )}
 
-        {card.rarity && (
+        {!!card.rarity && (
           <View style={styles.section}>
             <Text style={styles.label}>Rareté:</Text>
-            <Text style={styles.value}>{card.rarity}</Text>
+            <Text style={styles.value}>{renderText(card.rarity)}</Text>
           </View>
         )}
 
-        {card.artist && (
+        {!!card.artist && (
           <View style={styles.section}>
             <Text style={styles.label}>Artiste:</Text>
-            <Text style={styles.value}>{card.artist}</Text>
+            <Text style={styles.value}>{renderText(card.artist)}</Text>
           </View>
         )}
       </View>
@@ -138,18 +143,6 @@ const styles = StyleSheet.create({
     color: '#e0e0e0',
     fontSize: 13,
     lineHeight: 20,
-  },
-  backButton: {
-    backgroundColor: '#6200ee',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  backButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   error: {
     color: 'white',

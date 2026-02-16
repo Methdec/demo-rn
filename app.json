@@ -4,24 +4,30 @@
     "slug": "demo-rn",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/coucou.jpg",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/coucou.jpg",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#aaaaaa"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+        "foregroundImage": "./assets/coucou.jpg",
+        "backgroundColor": "#aaaaaa"
+      },
+      "package": "com.methdec.demorn"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/coucou.jpg"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0022fda5-cd5d-4ef4-8238-d6d23ef97ac3"
+      }
     }
   }
 }

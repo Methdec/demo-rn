@@ -7,8 +7,15 @@ const fetchFromScryfall = async (endpoint) => {
     const url = `${SCRYFALL_API_BASE}${endpoint}`
     const response = await fetch(url)
     
+    // Scryfall renvoie souvent un 404 si aucune carte n'est trouvée
+    // On gère cela pour éviter de lancer une exception "Error"
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`)
+      const errorData = await response.json()
+      return { 
+        success: false, 
+        error: errorData.details || `Erreur: ${response.status}`,
+        code: response.status 
+      }
     }
     
     const data = await response.json()
@@ -19,9 +26,16 @@ const fetchFromScryfall = async (endpoint) => {
   }
 }
 
-// Search for cards by name
-export const searchCardByName = async (cardName) => {
-  const endpoint = `/cards/search?q=${encodeURIComponent(`!"${cardName}"`)}`
+// RECHERCHE PAR NOM (Mise à jour pour SearchScreen)
+// On enlève le ! et les guillemets pour permettre une recherche plus large
+export const searchCardsByName = async (cardName) => {
+  const endpoint = `/cards/search?q=${encodeURIComponent(cardName)}`
+  return fetchFromScryfall(endpoint)
+}
+
+// Recherche exacte (Gardée pour des besoins spécifiques)
+export const getExactCardByName = async (cardName) => {
+  const endpoint = `/cards/named?exact=${encodeURIComponent(cardName)}`
   return fetchFromScryfall(endpoint)
 }
 
